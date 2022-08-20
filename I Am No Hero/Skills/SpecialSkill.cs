@@ -75,7 +75,7 @@ namespace I_Am_No_Hero
             StringBuilder sb = new();
 
             sb.Append($"==============================\n");
-            sb.Append(SkillName + "\n");
+            sb.Append(SkillName + $"({SPCost} SP)\n");
             sb.Append($"{SkillDescription}\n");
             sb.Append($"------------------------------\n");
             sb.Append($"Base Damage: {BaseDamage} ");

@@ -70,6 +70,7 @@ namespace I_Am_No_Hero
             if (name == "Yilaska")
             {
                 Name = "Yilaska";
+                ArticleName = Name;
                 Description = "The Princess of Pyronia.";
 
                 BaseHP = 150;
@@ -102,6 +103,7 @@ namespace I_Am_No_Hero
             else if (name == "REVIA")
             {
                 Name = "Revia";
+                ArticleName = Name;
                 Description = "Yilaska's assigned retainer. Capable with Swords.";
 
                 BaseHP = 200;
@@ -133,6 +135,7 @@ namespace I_Am_No_Hero
             {
                 Console.WriteLine($"A Random Dude was created. The Name parameter was \"{name}\"");
                 Name = "A Random Dude";
+                ArticleName = Name;
                 Description = "Who is this guy? Why is he fighting with us?\nIt looks like something went wrong.";
 
                 BaseHP = 500;

@@ -44,13 +44,18 @@ namespace I_Am_No_Hero
         internal List<Effect> StatusEffects = new();
 
         /// <summary>
-        /// Article determines whether the base person created should be described with "a", "the", or "".
+        /// Article determines whether the base person created should be described with "A", "The", or "".
         /// <br></br> Example: The Goblin Leader (IsImportant = true)
         /// <br></br> Example 2: A Deskil Knight (IsImportant = false)
         /// <br></br> Example 3: A Bandit (IsImportant = false)
         /// </summary>
-        internal string Article = "a";
+        internal string Article = "";
 
+
+        /// <summary>
+        /// Combines the Article and Name.
+        /// </summary>
+        internal string ArticleName;
 
         /// <summary>
         /// Vitality is the statistic that makes this RPG unique to others.

@@ -5,7 +5,7 @@
  * -------------------------------------------------------------------
  *  Author’s name and email:    Michael Ng, ngmw01@etsu.edu			
  *            Creation Date:	03/20/2022	
- *            Last Modified:    03/20/2022
+ *            Last Modified:    08/19/2022
  * -------------------------------------------------------------------
  */
 
@@ -20,19 +20,19 @@ namespace I_Am_No_Hero
 {
     internal class Battle
     {
-        private Ally AllyOne { get; set; }
-        private Ally AllyTwo { get; set; }
-        private Ally AllyThree { get; set; }
+        private static Ally AllyOne { get; set; }
+        private static Ally AllyTwo { get; set; }
+        private static Ally AllyThree { get; set; }
 
-        private Enemy EnemyOne { get; set; }
-        private Enemy EnemyTwo { get; set; }
-        private Enemy EnemyThree { get; set; }
+        private static Enemy EnemyOne { get; set; }
+        private static Enemy EnemyTwo { get; set; }
+        private static Enemy EnemyThree { get; set; }
 
-        private List<BasePerson> TurnOrder { get; set; }
+        private static List<BasePerson> TurnOrder { get; set; }
 
-        private BattleMenu BattleScenario { get; set; }
+        private static BattleMenu BattleScenario { get; set; }
 
-        private Boolean TurnOver { get; set; }
+        private static Boolean TurnOver { get; set; }
 
         /// <summary>
         /// Battle Outcomes start as null as can become the following upon reaching a condition:
@@ -45,6 +45,9 @@ namespace I_Am_No_Hero
         /// <br></br> This way, we don't have to add another field to BattleMenu. BattleOutcome will revert to null after a battle.
         /// </summary>
         internal static char? BattleOutcome { get; set; } = null;
+
+
+        internal static LargeMessageDialogBox msgDialog = new();
 
 
         /*
@@ -377,7 +380,6 @@ namespace I_Am_No_Hero
                     int physicalDamageTaken = damageDone - physicalDamageMitigated;
                     int magicalDamageTaken = damageDone - magicalDamageMitigated;
 
-                    MessageDialog msgDialog = new();
 
                     if (skillUsed.IsHealingSkill)
                     {
@@ -404,9 +406,10 @@ namespace I_Am_No_Hero
                                     }
                                 }
 
-                                msgDialog.label1.Text = $"{allyTarget.Article} {allyTarget.Name} took {magicalDamageTaken}HP of Physical damage!";
+                                msgDialog.label1.Text = $"{allyTarget.ArticleName} took {magicalDamageTaken}HP of Magical damage!";
                                 msgDialog.ShowDialog();
-                                Console.WriteLine($"{allyTarget.Article} {allyTarget.Name} took {magicalDamageTaken}HP of Magical damage!");
+                                //msgDialog.ShowDialog();
+                                Console.WriteLine($"{allyTarget.ArticleName} took {magicalDamageTaken}HP of Magical damage!");
                                 break;
 
                             //by default, just attack using physical damage.
@@ -430,14 +433,14 @@ namespace I_Am_No_Hero
                                     }
                                 }
 
-                                msgDialog = new();
+                                ClearMessageBox();
                                 if (UsingNormalSkill)
                                 {
                                     StringBuilder sb = new StringBuilder();
-                                    sb.Append($"{enemyTarget.Article} used the Skill {skillUsed.SkillName} on {allyTarget.Article} {allyTarget.Name}!" +
+                                    sb.Append($"{enemyTarget.ArticleName} used the Skill {skillUsed.SkillName} on {allyTarget.ArticleName}!" +
                                         $"\n(Description: {skillUsed.SkillDescription} | Deals {skillUsed.BaseDamage}HP of Physical Damage)" +
-                                        $"{allyTarget.Article} {allyTarget.Name}'s Defense ({allyTarget.ActualDefense}) and Damage Reduction stat ({allyTarget.ActualDamageReduction}), reduced the incoming damage by {physicalDamageMitigated}" +
-                                        $"\n{allyTarget.Article} {allyTarget.Name} took {physicalDamageTaken}HP of Physical damage!");
+                                        $"\n{allyTarget.ArticleName}'s Defense ({allyTarget.ActualDefense}) and Damage Reduction stat ({allyTarget.ActualDamageReduction}), reduced the incoming damage by {physicalDamageMitigated}" +
+                                        $"\n{allyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
 
 
                                     TriggerEffects(triggeredEffects, person, allyTarget);
@@ -451,14 +454,15 @@ namespace I_Am_No_Hero
                                     }
 
                                     msgDialog.label1.Text = sb.ToString();
+                                    msgDialog.ShowDialog();
                                 }
                                 else 
                                 {
                                     StringBuilder sb = new StringBuilder();
-                                    sb.Append($"{enemyTarget.Article} used the Special Skill {SPSkillUsed.SkillName} on {allyTarget.Article} {allyTarget.Name}!" +
+                                    sb.Append($"{enemyTarget.ArticleName} used the Special Skill {SPSkillUsed.SkillName} on {allyTarget.ArticleName}!" +
                                         $"\n(Description: {SPSkillUsed.SkillDescription} | Deals {SPSkillUsed.BaseDamage}HP of Physical Damage)" +
-                                        $"{allyTarget.Article} {allyTarget.Name}'s Defense ({allyTarget.ActualDefense}) and Damage Reduction stat ({allyTarget.ActualDamageReduction}), reduced the incoming damage by {physicalDamageMitigated}" +
-                                        $"\n{allyTarget.Article} {allyTarget.Name} took {physicalDamageTaken}HP of Physical damage!");
+                                        $"\n{allyTarget.ArticleName}'s Defense ({allyTarget.ActualDefense}) and Damage Reduction stat ({allyTarget.ActualDamageReduction}) reduced the incoming damage by {physicalDamageMitigated}" +
+                                        $"\n{allyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
 
 
                                     TriggerEffects(triggeredEffects, person, allyTarget);
@@ -470,14 +474,16 @@ namespace I_Am_No_Hero
                                             sb.Append($"\n - {effect.EffectName} \n({effect.EffectDescription})");
                                         }
                                     }
-                                    
+
                                     msgDialog.label1.Text = sb.ToString();
-                                    
+                                    msgDialog.ShowDialog();
                                 }
                                 
-                                msgDialog.ShowDialog();
-                                Console.WriteLine($"{allyTarget.Article} {allyTarget.Name} took {physicalDamageTaken}HP of Physical damage!");
+                                //msgDialog.ShowDialog();
+                                Console.WriteLine($"{allyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
                                 break;
+
+                                //TODO - Add MsgDialog box to Special Attacks.
                         }
                     }
                     else 
@@ -505,9 +511,10 @@ namespace I_Am_No_Hero
                                     }
                                 }
 
-                                msgDialog.label1.Text = $"{allyTarget.Article} {allyTarget.Name} took {magicalDamageTaken}HP of Physical damage!";
+                                msgDialog.label1.Text = $"{allyTarget.ArticleName} took {magicalDamageTaken}HP of Physical damage!";
                                 msgDialog.ShowDialog();
-                                Console.WriteLine($"{allyTarget.Article} {allyTarget.Name} took {magicalDamageTaken}HP of Magical damage!");
+                                //msgDialog.ShowDialog();
+                                Console.WriteLine($"{allyTarget.ArticleName} took {magicalDamageTaken}HP of Magical damage!");
                                 break;
 
                             //by default, just attack using physical damage.
@@ -530,13 +537,13 @@ namespace I_Am_No_Hero
                                 }
 
 
-                                msgDialog = new();
+                                ClearMessageBox();
                                 if (UsingNormalSkill)
                                 {
                                     StringBuilder sb = new StringBuilder();
-                                    sb.Append($"{enemyTarget.Article} used the Skill {skillUsed.SkillName} on {allyTarget.Article} {allyTarget.Name}!" +
+                                    sb.Append($"{enemyTarget.ArticleName} used the Skill {skillUsed.SkillName} on {allyTarget.ArticleName}!" +
                                         $"\n(Description: {skillUsed.SkillDescription} | Deals {skillUsed.BaseDamage}HP of Physical Damage)" +
-                                        $"{allyTarget.Article} {allyTarget.Name}'s Defense ({allyTarget.ActualDefense}) and Damage Reduction stat ({allyTarget.ActualDamageReduction}), reduced the incoming damage by {physicalDamageMitigated}" +
+                                        $"\n{allyTarget.Article} {allyTarget.Name}'s Defense ({allyTarget.ActualDefense}) and Damage Reduction stat ({allyTarget.ActualDamageReduction}), reduced the incoming damage by {physicalDamageMitigated}" +
                                         $"\n{allyTarget.Article} {allyTarget.Name} took {physicalDamageTaken}HP of Physical damage!");
 
 
@@ -551,14 +558,15 @@ namespace I_Am_No_Hero
                                     }
 
                                     msgDialog.label1.Text = sb.ToString();
+                                    msgDialog.ShowDialog();
                                 }
                                 else
                                 {
                                     StringBuilder sb = new StringBuilder();
-                                    sb.Append($"{enemyTarget.Article} used the Special Skill {SPSkillUsed.SkillName} on {allyTarget.Article} {allyTarget.Name}!" +
+                                    sb.Append($"{enemyTarget.ArticleName} used the Special Skill {SPSkillUsed.SkillName} on {allyTarget.ArticleName}!" +
                                         $"\n(Description: {SPSkillUsed.SkillDescription} | Deals {SPSkillUsed.BaseDamage}HP of Physical Damage)" +
-                                        $"{allyTarget.Article} {allyTarget.Name}'s Defense ({allyTarget.ActualDefense}) and Damage Reduction stat ({allyTarget.ActualDamageReduction}), reduced the incoming damage by {physicalDamageMitigated}" +
-                                        $"\n{allyTarget.Article} {allyTarget.Name} took {physicalDamageTaken}HP of Physical damage!");
+                                        $"\n{allyTarget.ArticleName}'s Defense ({allyTarget.ActualDefense}) and Damage Reduction stat ({allyTarget.ActualDamageReduction}), reduced the incoming damage by {physicalDamageMitigated}" +
+                                        $"\n{allyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
 
 
                                     TriggerEffects(triggeredEffects, person, allyTarget);
@@ -572,18 +580,19 @@ namespace I_Am_No_Hero
                                     }
 
                                     msgDialog.label1.Text = sb.ToString();
+                                    msgDialog.ShowDialog();
 
                                 }
 
-                                msgDialog.ShowDialog();
-                                Console.WriteLine($"{allyTarget.Article} {allyTarget.Name} took {physicalDamageTaken}HP of Physical damage!");
+                                //msgDialog.ShowDialog();
+                                Console.WriteLine($"{allyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
                                 break;
                         }
                     }
 
                     if (allyTarget.ActualHP == 0)
                     {
-                        Console.WriteLine($"{allyTarget.Name} fainted!\nThey can no longer fight in this battle.");
+                        Console.WriteLine($"{allyTarget.ArticleName} fainted!\nThey can no longer fight in this battle.");
                     }
 
                 }
@@ -617,16 +626,23 @@ namespace I_Am_No_Hero
                 }
             }
 
+            ClearMessageBox();
+
         }
 
         /// <summary>
-        /// Incurs the effects in the list triggeredEffects on the target.
+        /// The TriggerEffects method manages incurring effects on BasePersons during battles.
+        /// <br></br>Effects are tracked by inspecting every battlefield participant.
         /// </summary>
         /// <param name="triggeredEffects">The List of Effects that were successfully incurred on the target.</param>
-        /// <param name="target">The group of people being targetted.</param>
-        private void TriggerEffects(List<Effect> triggeredEffects, BasePerson caster, BasePerson target)
+        /// <param name="caster">The BasePerson incurring the effect on the target.
+        /// <br></br>This is necessary to calculate which team they are on and who they are.</param>
+        /// <param name="target">The BasePerson being targetted by the caster. 
+        /// <br></br>This may be an Ally or Enemy.</param>
+        internal static void TriggerEffects(List<Effect> triggeredEffects, BasePerson caster, BasePerson target)
         {
             Random rand = new Random();
+            int randomNumber = 0;
 
             foreach (Effect effect in triggeredEffects)
             {
@@ -636,23 +652,147 @@ namespace I_Am_No_Hero
                         caster.StatusEffects.Add(effect);
                         break;
                     case Target.Ally:
-                        //randomly incur the effect on one of two allies, if they are present.
-                        int randomNumber = rand.Next(2);
-                        if (randomNumber == 0 && IsAllyTwoAlive())
+
+                        //If an ally is attacking an enemy, the effect is randomly given to one of the other two allies.
+                        if (caster.GetType() == typeof(Ally) && target.GetType() == typeof(Enemy))
                         {
-                            AllyTwo.StatusEffects.Add(effect);
-                        }
-                        else 
-                        {
-                            if (IsAllyThreeAlive())
+                            //randomly incur the effect on one of two allies, if they are present.
+                            randomNumber = rand.Next(2);
+
+                            if (caster == Battle.AllyOne)
                             {
-                                AllyThree.StatusEffects.Add(effect);
+                                if (randomNumber == 0 && IsAllyTwoAlive())
+                                {
+                                    AllyTwo.StatusEffects.Add(effect);
+                                }
+                                else
+                                {
+                                    if (IsAllyThreeAlive())
+                                    {
+                                        AllyThree.StatusEffects.Add(effect);
+                                    }
+                                    else
+                                    {
+                                        AllyTwo.StatusEffects.Add(effect);
+                                    }
+                                }
+                            }
+                            else if (caster == EnemyTwo)
+                            {
+                                if (randomNumber == 0 && IsAllyOneAlive())
+                                {
+                                    AllyOne.StatusEffects.Add(effect);
+                                }
+                                else
+                                {
+                                    if (IsAllyThreeAlive())
+                                    {
+                                        AllyThree.StatusEffects.Add(effect);
+                                    }
+                                    else
+                                    {
+                                        AllyOne.StatusEffects.Add(effect);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (randomNumber == 0 && IsAllyOneAlive())
+                                {
+                                    AllyOne.StatusEffects.Add(effect);
+                                }
+                                else
+                                {
+                                    if (IsAllyTwoAlive())
+                                    {
+                                        AllyTwo.StatusEffects.Add(effect);
+                                    }
+                                    else
+                                    {
+                                        AllyOne.StatusEffects.Add(effect);
+                                    }
+                                }
+                            }
+                        }
+                        //If an enemy is attacking an ally, the effect is randomly given to one of the other two enemies.
+                        else if (caster.GetType() == typeof(Enemy) && target.GetType() == typeof(Ally))
+                        {
+                            //randomly incur the effect on an enemy, if they are present and are not the caster.
+                            randomNumber = rand.Next(2);
+
+                            if (caster == EnemyOne)
+                            {
+                                if (randomNumber == 0 && IsEnemyTwoAlive())
+                                {
+                                    EnemyTwo.StatusEffects.Add(effect);
+                                }
+                                else
+                                {
+                                    if (IsEnemyThreeAlive())
+                                    {
+                                        EnemyThree.StatusEffects.Add(effect);
+                                    }
+                                    else
+                                    {
+                                        EnemyTwo.StatusEffects.Add(effect);
+                                    }
+                                }
+                            }
+                            else if (caster == EnemyTwo)
+                            {
+                                if (randomNumber == 0 && IsEnemyOneAlive())
+                                {
+                                    EnemyOne.StatusEffects.Add(effect);
+                                }
+                                else
+                                {
+                                    if (IsEnemyThreeAlive())
+                                    {
+                                        EnemyThree.StatusEffects.Add(effect);
+                                    }
+                                    else
+                                    {
+                                        EnemyOne.StatusEffects.Add(effect);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (randomNumber == 0 && IsEnemyOneAlive())
+                                {
+                                    EnemyOne.StatusEffects.Add(effect);
+                                }
+                                else
+                                {
+                                    if (IsEnemyTwoAlive())
+                                    {
+                                        EnemyTwo.StatusEffects.Add(effect);
+                                    }
+                                    else
+                                    {
+                                        EnemyOne.StatusEffects.Add(effect);
+                                    }
+                                }
                             }
                         }
                         //If the character has no allies, we don't incur the effect on anything.
+
+                        //If an ally is targetting an ally, the effect is given to the targetted ally.
+                        else if (caster.GetType() == typeof(Ally) && target.GetType() == typeof(Ally)) 
+                        {
+                            target.StatusEffects.Add(effect);
+                        
+                        }
+                        //If an enemy is targetting an enemy, the effect is given to the targetted enemy.
+                        else //if (caster.GetType() == typeof(Enemy) && target.GetType() == typeof(Enemy)) 
+                        {
+                            target.StatusEffects.Add(effect);
+                        }
                         break;
+                        ///////////////////////////FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+
                     case Target.Enemy:
-                        if (target.GetType() == typeof(Enemy))
+                        if (caster.GetType() == typeof(Ally) && target.GetType() == typeof(Enemy))
                         {
                             //if who we have targetted is an enemy, we add the status effect to that enemy.
                             target.StatusEffects.Add(effect);
@@ -723,16 +863,8 @@ namespace I_Am_No_Hero
             }
         }
 
-        /// <summary>
-        /// Incurs the effects in the list triggeredEffects on the baseperson.
-        /// <br></br>This is an overloaded method.
-        /// </summary>
-        /// <param name="triggeredEffects">The List of Effects that were successfully incurred on the target.</param>
-        /// <param name="target">The person</param>
-        private void TriggerEffects(List<Effect> triggeredEffects, BasePerson person)
-        {
-            
-        }
+
+       
 
 
         /// <summary>
@@ -828,7 +960,7 @@ namespace I_Am_No_Hero
         ///     True - If AllyOne is not null and their HP is greater than 0. 
         /// <br>False - Otherwise</br>
         /// </returns>
-        private Boolean IsAllyOneAlive() 
+        internal static Boolean IsAllyOneAlive() 
         {
             if (AllyOne != null && AllyOne.ActualHP > 0) 
             {
@@ -848,7 +980,7 @@ namespace I_Am_No_Hero
         ///     True - If AllyTwo is not null and their HP is greater than 0. 
         /// <br>False - Otherwise</br>
         /// </returns>
-        private Boolean IsAllyTwoAlive()
+        internal static Boolean IsAllyTwoAlive()
         {
             if (AllyTwo != null && AllyTwo.ActualHP > 0)
             {
@@ -868,7 +1000,7 @@ namespace I_Am_No_Hero
         ///     True - If AllyThree is not null and their HP is greater than 0. 
         /// <br>False - Otherwise</br>
         /// </returns>
-        private Boolean IsAllyThreeAlive()
+        internal static Boolean IsAllyThreeAlive()
         {
             if (AllyThree != null && AllyThree.ActualHP > 0)
             {
@@ -888,7 +1020,7 @@ namespace I_Am_No_Hero
         ///     True - If EnemyOne is not null and their HP is greater than 0. 
         /// <br>False - Otherwise</br>
         /// </returns>
-        private Boolean IsEnemyOneAlive()
+        internal static Boolean IsEnemyOneAlive()
         {
             if (EnemyOne != null && EnemyOne.ActualHP > 0)
             {
@@ -908,7 +1040,7 @@ namespace I_Am_No_Hero
         ///     True - If EnemyTwo is not null and their HP is greater than 0. 
         /// <br>False - Otherwise</br>
         /// </returns>
-        private Boolean IsEnemyTwoAlive()
+        internal static Boolean IsEnemyTwoAlive()
         {
             if (EnemyTwo != null && EnemyTwo.ActualHP > 0)
             {
@@ -928,13 +1060,23 @@ namespace I_Am_No_Hero
         ///     True - If EnemyThree is not null and their HP is greater than 0. 
         /// <br>False - Otherwise</br>
         /// </returns>
-        private Boolean IsEnemyThreeAlive()
+        internal static Boolean IsEnemyThreeAlive()
         {
             if (EnemyThree != null && EnemyThree.ActualHP > 0)
             {
                 return true;
             }
             return false;
+        }
+
+
+
+        /// <summary>
+        /// The ClearMessageBox method clears any contents within the msgDialog LargeMessageDialogBox.
+        /// </summary>
+        internal static void ClearMessageBox() 
+        {
+            msgDialog = new();        
         }
     }
 }

@@ -356,10 +356,10 @@ namespace I_Am_No_Hero.Menus.BattleSubMenus
 
                         //TO DO - Implement variables from Battle to AttackMenu, SpecialAttackMenu, and SupportMenu.
                         StringBuilder sb = new StringBuilder();
-                        sb.Append($"{AllyOne.Article} {AllyOne.Name} used the Special Skill {skillUsed.SkillName} on {EnemyTarget.Article} {EnemyTarget.Name}!" +
+                        sb.Append($"{AllyOne.ArticleName} used the Skill {skillUsed.SkillName} on {EnemyTarget.ArticleName}!" +
                             $"\n(Description: {skillUsed.SkillDescription} | Deals {skillUsed.BaseDamage}HP of Physical Damage)" +
-                            $"{EnemyTarget.Article} {EnemyTarget.Name}'s Defense ({EnemyTarget.ActualDefense}) and Damage Reduction stat ({EnemyTarget.ActualDamageReduction}) reduced the incoming damage by {physicalDamageMitigated}" +
-                            $"\n{EnemyTarget.Article} {EnemyTarget.Name} took {physicalDamageTaken}HP of Physical damage!");
+                            $"{EnemyTarget.ArticleName}'s Defense ({EnemyTarget.ActualDefense}) and Damage Reduction stat ({EnemyTarget.ActualDamageReduction}) reduced the incoming damage by {physicalDamageMitigated}" +
+                            $"\n{EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
 
                         Skill = skillUsed;
                         
@@ -397,10 +397,10 @@ namespace I_Am_No_Hero.Menus.BattleSubMenus
                         }
 
                         StringBuilder stb = new StringBuilder();
-                        stb.Append($"{AllyOne.Article} {AllyOne.Name} used the Skill {skillUsed.SkillName} on {EnemyTarget.Article} {EnemyTarget.Name}!" +
+                        stb.Append($"{AllyOne.Article} {AllyOne.Name} used the Skill {skillUsed.SkillName} on {EnemyTarget.ArticleName}!" +
                             $"\n(Description: {skillUsed.SkillDescription} | Deals {skillUsed.BaseDamage}HP of Physical Damage)" +
-                            $"{EnemyTarget.Article} {EnemyTarget.Name}'s Resistance ({EnemyTarget.ActualResistance}) and Damage Reduction stat ({EnemyTarget.ActualDamageReduction}) reduced the incoming damage by {physicalDamageMitigated}" +
-                            $"\n{EnemyTarget.Article} {EnemyTarget.Name} took {physicalDamageTaken}HP of Physical damage!");
+                            $"{EnemyTarget.ArticleName}'s Resistance ({EnemyTarget.ActualResistance}) and Damage Reduction stat ({EnemyTarget.ActualDamageReduction}) reduced the incoming damage by {physicalDamageMitigated}" +
+                            $"\n{EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
 
                         Skill = skillUsed;
 
@@ -416,7 +416,7 @@ namespace I_Am_No_Hero.Menus.BattleSubMenus
 
                         //msgDialog.label1.Text = stb.ToString();
                         MessageBox.Show(stb.ToString());
-                        Console.WriteLine($"Slash! {EnemyTarget.Article} {EnemyTarget.Name} took {physicalDamageTaken}HP of Physical damage!");
+                        Console.WriteLine($"Slash! {EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
                         break;
                 }
 

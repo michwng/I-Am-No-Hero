@@ -22,6 +22,8 @@ namespace I_Am_No_Hero.Menus.BattleMenus.BattleSubMenus
         Enemy EnemyTarget = EnemyOne;
 
         internal static Boolean TurnOver { get; private set; } = false;
+        internal static SpecialSkill SpecialSkill { get; set; } = new();
+        internal static List<Effect> TriggeredEffects = new();
 
 
         /*
@@ -260,6 +262,7 @@ namespace I_Am_No_Hero.Menus.BattleMenus.BattleSubMenus
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.label2.Text = AllyOne.SkillSet.SPSkills[comboBox1.SelectedIndex].GetSkillInfo();
+            SpecialSkill = AllyOne.SkillSet.SPSkills[comboBox1.SelectedIndex];
         }
 
         /// <summary>
@@ -280,6 +283,7 @@ namespace I_Am_No_Hero.Menus.BattleMenus.BattleSubMenus
                 char damageType = skillUsed.DamageType;
                 int accuracy = skillUsed.Accuracy;
                 List<Effect> effects = skillUsed.SkillEffects;
+                List<Effect> triggeredEffects = new();
 
                 int enemyDefense = EnemyOne.ActualDefense;
                 int enemyResistance = EnemyOne.ActualResistance;
@@ -300,6 +304,183 @@ namespace I_Am_No_Hero.Menus.BattleMenus.BattleSubMenus
                 //If we get less than accuracy, we use the skill.
                 if (rng.Next(100) < accuracy)
                 {
+                    int damageDone = (int)(skillDamage + damageVariable);
+
+                    int physicalDamageMitigated = (int)(enemyDefense + (damageDone * EnemyTarget.ActualDamageReduction));
+                    int magicalDamageMitigated = (int)(enemyResistance + (damageDone * EnemyTarget.ActualDamageReduction));
+
+                    int physicalDamageTaken = damageDone - physicalDamageMitigated;
+                    int magicalDamageTaken = damageDone - magicalDamageMitigated;
+
+                    if (skillUsed.IsHealingSkill)
+                    {
+                        //TODO - Implement bypass defense/resistance for heals.
+                        switch (damageType)
+                        {
+                            case 'M':
+                                if (magicalDamageTaken > EnemyTarget.ActualHP)
+                                {
+                                    magicalDamageTaken = EnemyTarget.ActualHP;
+                                    EnemyTarget.ActualHP = 0;
+                                }
+                                else
+                                {
+                                    if (magicalDamageTaken > 0)
+                                    {
+                                        EnemyTarget.ActualHP -= magicalDamageTaken;
+                                    }
+                                    else
+                                    {
+                                        //If the damage done would be less than 0, we deal 0 damage
+                                        //instead of, say, -4 damage (which heals the target).
+                                        magicalDamageTaken = 0;
+                                    }
+                                }
+
+                                Battle.msgDialog.label1.Text = $"{EnemyTarget.ArticleName} took {magicalDamageTaken}HP of Magical damage!";
+                                Battle.msgDialog.ShowDialog();
+                                //msgDialog.ShowDialog();
+                                Console.WriteLine($"{EnemyTarget.ArticleName} took {magicalDamageTaken}HP of Magical damage!");
+                                break;
+
+                            //by default, just attack using physical damage.
+                            default:
+                                if (physicalDamageTaken > EnemyTarget.ActualHP)
+                                {
+                                    physicalDamageTaken = EnemyTarget.ActualHP;
+                                    EnemyTarget.ActualHP = 0;
+                                }
+                                else
+                                {
+                                    if (physicalDamageTaken > 0)
+                                    {
+                                        EnemyTarget.ActualHP -= physicalDamageTaken;
+                                    }
+                                    else
+                                    {
+                                        //If the damage done would be less than 0, we deal 0 damage
+                                        //instead of, say, -4 damage (which heals the target).
+                                        physicalDamageTaken = 0;
+                                    }
+                                }
+                                break;
+                        
+
+                            Battle.ClearMessageBox();
+                              
+                            StringBuilder sb = new StringBuilder();
+                            sb.Append($"{AllyOne.ArticleName} used the Special Skill {SpecialSkill.SkillName} on {EnemyTarget.ArticleName}!" +
+                                $"\n(Description: {SpecialSkill.SkillDescription} | Deals {SpecialSkill.BaseDamage}HP of Physical Damage)" +
+                                $"\n{EnemyTarget.ArticleName}'s Defense ({EnemyTarget.ActualDefense}) and Damage Reduction stat ({EnemyTarget.ActualDamageReduction}) reduced the incoming damage by {physicalDamageMitigated}" +
+                                $"\n{EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
+
+
+                            Battle.TriggerEffects(triggeredEffects, AllyOne, EnemyTarget);
+                            if (triggeredEffects.Count > 0)
+                            {
+                                sb.Append($"\n\n{EnemyTarget.Name} is now suffering the following effects: ");
+                                foreach (Effect effect in triggeredEffects)
+                                {
+                                    sb.Append($"\n - {effect.EffectName} \n({effect.EffectDescription})");
+                                }
+                            }
+
+                            Battle.msgDialog.label1.Text = sb.ToString();
+                            Battle.msgDialog.ShowDialog();
+
+                            //msgDialog.ShowDialog();
+                            Console.WriteLine($"{EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
+                            break;
+
+                            //TODO - Add MsgDialog box to Special Attacks.
+                        }
+                    }
+                    else
+                    {
+                        //If the skill is not a healing skill.
+                        switch (damageType)
+                        {
+                            case 'M':
+                                if (EnemyTarget.ActualHP - magicalDamageTaken <= 0)
+                                {
+                                    magicalDamageTaken = EnemyTarget.ActualHP;
+                                    EnemyTarget.ActualHP = 0;
+                                }
+                                else
+                                {
+                                    if (magicalDamageTaken > 0)
+                                    {
+                                        EnemyTarget.ActualHP -= magicalDamageTaken;
+                                    }
+                                    else
+                                    {
+                                        //If the damage done would be less than 0, we deal 0 damage
+                                        //instead of, say, -4 damage (which heals the target).
+                                        magicalDamageTaken = 0;
+                                    }
+                                }
+
+                                Battle.msgDialog.label1.Text = $"{EnemyTarget.ArticleName} took {magicalDamageTaken}HP of Physical damage!";
+                                Battle.msgDialog.ShowDialog();
+                                //msgDialog.ShowDialog();
+                                Console.WriteLine($"{EnemyTarget.ArticleName} took {magicalDamageTaken}HP of Magical damage!");
+                                break;
+
+                            //by default, just attack using physical damage.
+                            default:
+                                if (EnemyTarget.ActualHP - physicalDamageTaken <= 0)
+                                {
+                                    physicalDamageTaken = EnemyTarget.ActualHP;
+                                    EnemyTarget.ActualHP = 0;
+                                }
+                                else
+                                {
+                                    if (physicalDamageTaken > 0)
+                                    {
+                                        EnemyTarget.ActualHP -= physicalDamageTaken;
+                                    }
+                                    else
+                                    {
+                                        physicalDamageTaken = 0;
+                                    }
+                                }
+
+
+                                Battle.ClearMessageBox();
+                                StringBuilder sb = new StringBuilder();
+                                sb.Append($"{EnemyTarget.ArticleName} used the Special Skill {SpecialSkill.SkillName} on {EnemyTarget.ArticleName}!" +
+                                    $"\n(Description: {SpecialSkill.SkillDescription} | Deals {SpecialSkill.BaseDamage}HP of Physical Damage)" +
+                                    $"\n{EnemyTarget.ArticleName}'s Defense ({EnemyTarget.ActualDefense}) and Damage Reduction stat ({EnemyTarget.ActualDamageReduction}), reduced the incoming damage by {physicalDamageMitigated}" +
+                                    $"\n{EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
+
+
+                                Battle.TriggerEffects(triggeredEffects, AllyOne, EnemyTarget);
+                                if (triggeredEffects.Count > 0)
+                                {
+                                    sb.Append($"\n\n{EnemyTarget.Name} is now suffering the following effects: ");
+                                    foreach (Effect effect in triggeredEffects)
+                                    {
+                                        sb.Append($"\n - {effect.EffectName} \n({effect.EffectDescription})");
+                                    }
+                                }
+
+                                Battle.msgDialog.label1.Text = sb.ToString();
+                                Battle.msgDialog.ShowDialog();
+
+
+                                //msgDialog.ShowDialog();
+                                Console.WriteLine($"{EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
+                                break;
+                        }
+                    }
+                    /*int damageDone = (int)(skillDamage + damageVariable);
+
+                    int physicalDamageMitigated = (int)(EnemyTarget.ActualDefense + (damageDone * EnemyTarget.ActualDamageReduction));
+                    int magicalDamageMitigated = (int)(EnemyTarget.ActualResistance + (damageDone * EnemyTarget.ActualDamageReduction));
+
+                    int physicalDamageTaken = damageDone - physicalDamageMitigated;
+                    int magicalDamageTaken = damageDone - magicalDamageMitigated;
+
                     double damageModifier = 1 - enemyDamageReduction;
                     int magicalDamageDone = (int)((skillDamage + damageVariable - enemyResistance) * damageModifier);
                     int physicalDamageDone = (int)((skillDamage + damageVariable - enemyDefense) * damageModifier);
@@ -324,6 +505,10 @@ namespace I_Am_No_Hero.Menus.BattleMenus.BattleSubMenus
                                 }
                             }
 
+                            Battle.msgDialog.label1.Text = $"{AllyOne.ArticleName} used the Skill { skillUsed.SkillName}on {EnemyTarget.ArticleName}!" +
+                                        $"\n(Description: {skillUsed.SkillDescription} | Deals {skillUsed.BaseDamage}HP of Physical Damage)" +
+                                        $"\n{EnemyTarget.ArticleName}'s Defense ({EnemyTarget.ActualDefense}) and Damage Reduction stat ({EnemyTarget.ActualDamageReduction}), reduced the incoming damage by {physicalDamageMitigated}" +
+                                        $"\n{EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!""
                             Console.WriteLine($"Cast! The {EnemyTarget.Name} took {magicalDamageDone}HP of Magical damage!");
                             break;
 
@@ -355,7 +540,7 @@ namespace I_Am_No_Hero.Menus.BattleMenus.BattleSubMenus
                         Console.WriteLine($"The {EnemyTarget.Name} fainted!\nThey can no longer fight in this battle.");
                     }
 
-                    AllyOne.ActualSP -= skillUsed.SPCost;
+                    AllyOne.ActualSP -= skillUsed.SPCost;*/
                 }
                 else
                 {

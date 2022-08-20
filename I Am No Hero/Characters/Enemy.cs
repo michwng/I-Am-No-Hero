@@ -78,6 +78,7 @@ namespace I_Am_No_Hero
             {
                 case 0:
                     Name = "Slayte";
+                    ArticleName = Name;
                     Description = "A Knight of the Deskil.";
                     BaseHP = 500;
                     BaseSP = 25;
@@ -162,6 +163,7 @@ namespace I_Am_No_Hero
                 case 0:
                     Article = "The";
                     Name = "Deskil Aspirant Myrmidon";
+                    ArticleName = Article + " " + Name;
                     Description = "A follower of the Deskil Knights.";
                     BaseHP = 250;
                     BaseSP = 50;
@@ -211,6 +213,7 @@ namespace I_Am_No_Hero
                 case 1:
                     Article = "The";
                     Name = "Deskil Aspirant Acolyte";
+                    ArticleName = Article + " " + Name;
                     Description = "A follower of the Deskil Knights.";
                     BaseHP = 150;
                     BaseSP = 100;
@@ -256,6 +259,7 @@ namespace I_Am_No_Hero
                 default: //case 2:
                     Article = "The";
                     Name = "Deskil Aspirant Thief";
+                    ArticleName = Article + " " + Name;
                     Description = "A follower of the Deskil Knights.";
                     BaseHP = 150;
                     BaseSP = 30;

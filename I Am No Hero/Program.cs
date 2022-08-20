@@ -39,12 +39,12 @@ namespace I_Am_No_Hero
             //This should take the following path, starting from the folder where the solution is located at: 
             //I Am No Hero\bin\Soundtrack\Echoes.wav
             //Debug.WriteLine(FileRoot + "Soundtrack" + Path.DirectorySeparatorChar + "Echoes.wav");
+
+
             PlaySoundTrack("Symphony Of Specters - Fight For Your Freedom");
             Application.Run(new MainMenu());
         
             //TODO Knight captured by the Evil Lord, ransom exchange for princess. Princess Yilaska sets out to rescue him.
-            //TODO Etna delives man in self-defense. Sent to Dungeon of Despair for punishment.
-            //TODO A civilian of Xespir, Fargus, seeks to escape a bandit camp after being captured.
             //TODO Elase leads a revolution to liberate Cyronia from the corrupt government.
         }
 

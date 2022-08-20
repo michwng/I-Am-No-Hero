@@ -151,8 +151,8 @@ namespace I_Am_No_Hero
         /// <param name="effectChance">The probability that the effect will be incurred on the target.</param>
         /// <param name="effectTarget">Who the effect targets. (For example: All Allies | Enemies | Self | Ally)</param>
         /// <param name="targetAttributes">The attributes being targetted.
-        ///                             <br></br>For example, if we used a weakening skill, we'd probably be targetting constitution, so we'd use a new list with constitution.
-        ///                             <br></br> If we wanted to reduce multiple stats at once, then it is possible.</param>
+        ///                             <br></br>For example, if we used a weakening skill, we'd probably be targetting constitution, so we'd use a new list with constitution, so <br></br> - new List[StatAttribute] {StatAttribute.Constitution}.
+        ///                             <br></br> If we wanted to reduce multiple stats at once, for instance, defense, constitution, affinity, and resistance then it is possible with <br></br> - new List[StatAttribute] {StatAttribute.Defense, StatAttribute.Constitution, StatAttribute.Affinity, StatAttribute.Resistance}.</param>
         /// <param name="strengthIsPercentage">Determines if the strength parameter signifies a parcentage.</param>
         /// <param name="percentageBase">If we are basing a percentage, what value should we be referencing?
         ///                             <br></br>For example, if we had Speed in attributebase, should that be based off the enemy's speed or the caster's speed?
@@ -192,8 +192,9 @@ namespace I_Am_No_Hero
         ///                             <br></br>(In the example provided above, we just put in a new list containing speed.)
         ///                             <br></br> - If we wanted to reduce target HP by 20% of our Constitution and Affinity, we add both of those attributes to the list.</param>
         /// <param name="targetAttributes">The attributes being targetted.
-        ///                             <br></br>For example, if we used a weakening skill, we'd probably be targetting constitution, so we'd use a new list with constitution.
-        ///                             <br></br> If we wanted to reduce multiple stats at once, then it is possible.</param>
+        ///                             <br></br>For example, if we used a weakening skill, we'd probably be targetting constitution, so we'd use a new list with constitution, so <br></br> - new List[StatAttribute] {StatAttribute.Constitution}.
+        ///                             <br></br> If we wanted to reduce multiple stats at once, for instance, defense, constitution, affinity, and resistance then it is possible with <br></br> - new List[StatAttribute] {StatAttribute.Defense, StatAttribute.Constitution, StatAttribute.Affinity, StatAttribute.Resistance}.</param>
+        /// <param name="strengthIsPercentage">Determines if the strength parameter signifies a percentage.</param>
         /// <param name="isPositiveEffect">Determines if the effect will heal or damage the target.</param>
         /// <param name="strengthIsPercentage">Determines if the strength parameter signifies a parcentage.</param>
         /// <param name="percentageBase">If we are basing a percentage, what value should we be referencing?
@@ -233,7 +234,7 @@ namespace I_Am_No_Hero
         /// <param name="effectStrength">The strength of the effect.</param>
         /// <param name="effectLength">The amount of turns the effect will affect the target.</param>
         /// <param name="effectChance">The probability that the effect will be incurred on the target.</param>
-        /// <param name="effectClass">Who the effect targets. (For example: All Allies | Enemies | Self | Ally)</param>
+        /// <param name="effectClass">Utilizes the EffectClass enum to predetermine what the effect does. See the EffectClass enum for more details on what each predetermined effect does.</param>
         public Effect(string effectName, string effectDescription, string actualEffectDescription, int effectStrength, int effectLength, int effectChance, EffectClass effectClass)
         {
             EffectName = effectName;

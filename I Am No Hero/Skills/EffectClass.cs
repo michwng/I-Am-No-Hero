@@ -290,7 +290,7 @@ namespace I_Am_No_Hero.Skills
         Incorrigible,
 
         /// <summary>
-        /// None is the default EffectClass and signified that the effect does nothing.
+        /// None is the default EffectClass and signifies that the effect does nothing.
         /// </summary>
         None
 
