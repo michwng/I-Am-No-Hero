@@ -364,37 +364,36 @@ namespace I_Am_No_Hero.Menus.BattleMenus.BattleSubMenus
                                     }
                                 }
                                 break;
-                        
-
-                            Battle.ClearMessageBox();
-                              
-                            StringBuilder sb = new StringBuilder();
-                            sb.Append($"{AllyOne.ArticleName} used the Special Skill {SpecialSkill.SkillName} on {EnemyTarget.ArticleName}!" +
-                                $"\n(Description: {SpecialSkill.SkillDescription} | Deals {SpecialSkill.BaseDamage}HP of Physical Damage)" +
-                                $"\n{EnemyTarget.ArticleName}'s Defense ({EnemyTarget.ActualDefense}) and Damage Reduction stat ({EnemyTarget.ActualDamageReduction}) reduced the incoming damage by {physicalDamageMitigated}" +
-                                $"\n{EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
-
-
-                            Battle.TriggerEffects(triggeredEffects, AllyOne, EnemyTarget);
-                            if (triggeredEffects.Count > 0)
-                            {
-                                sb.Append($"\n\n{EnemyTarget.Name} is now suffering the following effects: ");
-                                foreach (Effect effect in triggeredEffects)
-                                {
-                                    sb.Append($"\n - {effect.EffectName} \n({effect.EffectDescription})");
-                                }
-                            }
-
-                            Battle.msgDialog.label1.Text = sb.ToString();
-                            Battle.msgDialog.ShowDialog();
-
-                            //msgDialog.ShowDialog();
-                            Console.WriteLine($"{EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
-                            break;
-
-                            //TODO - Add MsgDialog box to Special Attacks.
                         }
-                    }
+
+                        Battle.ClearMessageBox();
+                              
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append($"{AllyOne.ArticleName} used the Special Skill {SpecialSkill.SkillName} on {EnemyTarget.ArticleName}!" +
+                            $"\n(Description: {SpecialSkill.SkillDescription} | Deals {SpecialSkill.BaseDamage}HP of Physical Damage)" +
+                            $"\n{EnemyTarget.ArticleName}'s Defense ({EnemyTarget.ActualDefense}) and Damage Reduction stat ({EnemyTarget.ActualDamageReduction}) reduced the incoming damage by {physicalDamageMitigated}" +
+                            $"\n{EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
+
+
+                        Battle.TriggerEffects(triggeredEffects, AllyOne, EnemyTarget);
+                        if (triggeredEffects.Count > 0)
+                        {
+                            sb.Append($"\n\n{EnemyTarget.Name} is now suffering the following effects: ");
+                            foreach (Effect effect in triggeredEffects)
+                            {
+                                sb.Append($"\n - {effect.EffectName} \n({effect.EffectDescription})");
+                            }
+                        }
+
+                        Battle.msgDialog.label1.Text = sb.ToString();
+                        Battle.msgDialog.ShowDialog();
+                            Console.WriteLine("Battle Shown Dialog");
+
+                        //msgDialog.ShowDialog();
+                        Console.WriteLine($"{EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
+
+                        //TODO - Add MsgDialog box to Special Attacks.
+                }
                     else
                     {
                         //If the skill is not a healing skill.
@@ -448,7 +447,7 @@ namespace I_Am_No_Hero.Menus.BattleMenus.BattleSubMenus
 
                                 Battle.ClearMessageBox();
                                 StringBuilder sb = new StringBuilder();
-                                sb.Append($"{EnemyTarget.ArticleName} used the Special Skill {SpecialSkill.SkillName} on {EnemyTarget.ArticleName}!" +
+                                sb.Append($"{AllyOne.ArticleName} used the Special Skill {SpecialSkill.SkillName} on {EnemyTarget.ArticleName}!" +
                                     $"\n(Description: {SpecialSkill.SkillDescription} | Deals {SpecialSkill.BaseDamage}HP of Physical Damage)" +
                                     $"\n{EnemyTarget.ArticleName}'s Defense ({EnemyTarget.ActualDefense}) and Damage Reduction stat ({EnemyTarget.ActualDamageReduction}), reduced the incoming damage by {physicalDamageMitigated}" +
                                     $"\n{EnemyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");

@@ -5,7 +5,7 @@
  * -------------------------------------------------------------------
  *  Author’s name and email:    Michael Ng, ngmw01@etsu.edu			
  *            Creation Date:	03/20/2022	
- *            Last Modified:    08/19/2022
+ *            Last Modified:    09/01/2022
  * -------------------------------------------------------------------
  */
 
@@ -174,8 +174,16 @@ namespace I_Am_No_Hero
             Ally allyTarget = AllyOne;
             Enemy enemyTarget = EnemyOne;
 
+            ///Targetting helps the algorithm determine who will be targetted.
+            ///The 3 values it can have are:
+            ///1. 'A' - Represents Ally.
+            ///2. 'E' - Represents Enemy.
+            ///3. 'S' - Represents Self.
+            char Targetting;
+
             Random random = new Random();
 
+            //======================================================== ENEMY TURN ===============================================================//
             if (person.GetType() == typeof(Enemy))
             {
                 //Iterate an enemy's turn.
@@ -254,7 +262,7 @@ namespace I_Am_No_Hero
 
                 switch (skillUsed.Target)
                 {
-                    //The skill targets the other team.
+                    //The skill targets the other team (the hero's team).
                     //Context: The enemy is using a skill that targets the Ally team.
                     case Target.Enemy:
                         switch (temp)
@@ -272,6 +280,7 @@ namespace I_Am_No_Hero
                                 {
                                     allyTarget = AllyOne;
                                 }
+                                Targetting = 'E';
                                 break;
                             case 1:
                                 if (AllyTwo is not null && AllyTwo.ActualHP > 0)
@@ -282,23 +291,25 @@ namespace I_Am_No_Hero
                                 {
                                     allyTarget = AllyOne;
                                 }
+                                Targetting = 'E';
                                 break;
                             default:
                                 allyTarget = AllyOne;
+                                Targetting = 'E';
                                 break;
                         }
                         break;
                     //The skill targets the enemy's team.
-                    //Context: The enemy is using a skill that targets one of their allies.
+                    //Context: The enemy is using a skill that targets one of their allies (aka another fellow enemy).
                     case Target.Ally:
                         switch (temp)
                         {
                             case 0:
-                                if (EnemyThree is not null)
+                                if (EnemyThree is not null && person != EnemyThree)
                                 {
                                     enemyTarget = EnemyThree;
                                 }
-                                else if (EnemyTwo is not null)
+                                else if (EnemyTwo is not null && person != EnemyTwo)
                                 {
                                     enemyTarget = EnemyTwo;
                                 }
@@ -306,9 +317,10 @@ namespace I_Am_No_Hero
                                 {
                                     enemyTarget = EnemyOne;
                                 }
+                                Targetting = 'A';
                                 break;
                             case 1:
-                                if (AllyTwo is not null)
+                                if (AllyTwo is not null && person != EnemyTwo)
                                 {
                                     enemyTarget = EnemyTwo;
                                 }
@@ -316,9 +328,11 @@ namespace I_Am_No_Hero
                                 {
                                     enemyTarget = EnemyOne;
                                 }
+                                Targetting = 'A';
                                 break;
                             default:
                                 enemyTarget = EnemyOne;
+                                Targetting = 'A';
                                 break;
                         }
                         break;
@@ -384,107 +398,73 @@ namespace I_Am_No_Hero
                     if (skillUsed.IsHealingSkill)
                     {
                         //TODO - Implement bypass defense/resistance for heals.
-                        switch (damageType)
-                        {
-                            case 'M':
-                                if (magicalDamageTaken > allyTarget.ActualHP)
+                            if (damageDone > (enemyTarget.ActualHP- enemyTarget.BaseHP))
+                            {
+                                damageDone = (enemyTarget.ActualHP - enemyTarget.BaseHP);
+                                enemyTarget.ActualHP = enemyTarget.BaseHP;
+                            }
+                            else
+                            {
+                                if (damageDone > 0)
                                 {
-                                    magicalDamageTaken = allyTarget.ActualHP;
-                                    allyTarget.ActualHP = 0;
+                                enemyTarget.ActualHP += damageDone;
                                 }
                                 else
                                 {
-                                    if (magicalDamageTaken > 0)
+                                    //If the damage done would be less than 0, we deal 0 damage
+                                    //instead of, say, -4 damage (which heals the target).
+                                    physicalDamageTaken = 0;
+                                }
+                            }
+
+                            if (UsingNormalSkill)
+                            {
+                                StringBuilder sb = new StringBuilder();
+
+                                sb.Append($"{enemyTarget.ArticleName} used the Skill {skillUsed.SkillName} to heal {enemyTarget.ArticleName}!" +
+                                    $"\n(Description: {skillUsed.SkillDescription} | Deals {skillUsed.BaseDamage}HP of Physical Damage)" +
+                                    $"\n{allyTarget.ArticleName}'s Defense ({allyTarget.ActualDefense}) and Damage Reduction stat ({allyTarget.ActualDamageReduction}), reduced the incoming damage by {physicalDamageMitigated}" +
+                                    $"\n{allyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
+
+
+                                TriggerEffects(triggeredEffects, person, allyTarget);
+                                if (triggeredEffects.Count > 0)
+                                {
+                                    sb.Append($"\n\n{allyTarget.Name} is now suffering the following effects: ");
+                                    foreach (Effect effect in triggeredEffects)
                                     {
-                                        allyTarget.ActualHP -= magicalDamageTaken;
-                                    }
-                                    else
-                                    {
-                                        //If the damage done would be less than 0, we deal 0 damage
-                                        //instead of, say, -4 damage (which heals the target).
-                                        magicalDamageTaken = 0;
+                                        sb.Append($"\n - {effect.EffectName} \n({effect.EffectDescription})");
                                     }
                                 }
 
-                                msgDialog.label1.Text = $"{allyTarget.ArticleName} took {magicalDamageTaken}HP of Magical damage!";
+                                msgDialog.label1.Text = sb.ToString();
                                 msgDialog.ShowDialog();
-                                //msgDialog.ShowDialog();
-                                Console.WriteLine($"{allyTarget.ArticleName} took {magicalDamageTaken}HP of Magical damage!");
-                                break;
+                            }
+                            else 
+                            {
+                                StringBuilder sb = new StringBuilder();
+                                sb.Append($"{enemyTarget.ArticleName} used the Special Skill {SPSkillUsed.SkillName} on {allyTarget.ArticleName}!" +
+                                    $"\n(Description: {SPSkillUsed.SkillDescription} | Deals {SPSkillUsed.BaseDamage}HP of Physical Damage)" +
+                                    $"\n{allyTarget.ArticleName}'s Defense ({allyTarget.ActualDefense}) and Damage Reduction stat ({allyTarget.ActualDamageReduction}) reduced the incoming damage by {physicalDamageMitigated}" +
+                                    $"\n{allyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
 
-                            //by default, just attack using physical damage.
-                            default:
-                                if (physicalDamageTaken > allyTarget.ActualHP)
+
+                                TriggerEffects(triggeredEffects, person, allyTarget);
+                                if (triggeredEffects.Count > 0) 
                                 {
-                                    physicalDamageTaken = allyTarget.ActualHP;
-                                    allyTarget.ActualHP = 0;
-                                }
-                                else
-                                {
-                                    if (physicalDamageTaken > 0)
+                                    sb.Append($"\n\n{allyTarget.Name} is now suffering the following effects: ");
+                                    foreach (Effect effect in triggeredEffects)
                                     {
-                                        allyTarget.ActualHP -= physicalDamageTaken;
-                                    }
-                                    else
-                                    {
-                                        //If the damage done would be less than 0, we deal 0 damage
-                                        //instead of, say, -4 damage (which heals the target).
-                                        physicalDamageTaken = 0;
+                                        sb.Append($"\n - {effect.EffectName} \n({effect.EffectDescription})");
                                     }
                                 }
 
-                                ClearMessageBox();
-                                if (UsingNormalSkill)
-                                {
-                                    StringBuilder sb = new StringBuilder();
-                                    sb.Append($"{enemyTarget.ArticleName} used the Skill {skillUsed.SkillName} on {allyTarget.ArticleName}!" +
-                                        $"\n(Description: {skillUsed.SkillDescription} | Deals {skillUsed.BaseDamage}HP of Physical Damage)" +
-                                        $"\n{allyTarget.ArticleName}'s Defense ({allyTarget.ActualDefense}) and Damage Reduction stat ({allyTarget.ActualDamageReduction}), reduced the incoming damage by {physicalDamageMitigated}" +
-                                        $"\n{allyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
-
-
-                                    TriggerEffects(triggeredEffects, person, allyTarget);
-                                    if (triggeredEffects.Count > 0)
-                                    {
-                                        sb.Append($"\n\n{allyTarget.Name} is now suffering the following effects: ");
-                                        foreach (Effect effect in triggeredEffects)
-                                        {
-                                            sb.Append($"\n - {effect.EffectName} \n({effect.EffectDescription})");
-                                        }
-                                    }
-
-                                    msgDialog.label1.Text = sb.ToString();
-                                    msgDialog.ShowDialog();
-                                }
-                                else 
-                                {
-                                    StringBuilder sb = new StringBuilder();
-                                    sb.Append($"{enemyTarget.ArticleName} used the Special Skill {SPSkillUsed.SkillName} on {allyTarget.ArticleName}!" +
-                                        $"\n(Description: {SPSkillUsed.SkillDescription} | Deals {SPSkillUsed.BaseDamage}HP of Physical Damage)" +
-                                        $"\n{allyTarget.ArticleName}'s Defense ({allyTarget.ActualDefense}) and Damage Reduction stat ({allyTarget.ActualDamageReduction}) reduced the incoming damage by {physicalDamageMitigated}" +
-                                        $"\n{allyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
-
-
-                                    TriggerEffects(triggeredEffects, person, allyTarget);
-                                    if (triggeredEffects.Count > 0) 
-                                    {
-                                        sb.Append($"\n\n{allyTarget.Name} is now suffering the following effects: ");
-                                        foreach (Effect effect in triggeredEffects)
-                                        {
-                                            sb.Append($"\n - {effect.EffectName} \n({effect.EffectDescription})");
-                                        }
-                                    }
-
-                                    msgDialog.label1.Text = sb.ToString();
-                                    msgDialog.ShowDialog();
-                                }
+                                msgDialog.label1.Text = sb.ToString();
+                                msgDialog.ShowDialog();
+                            }
                                 
-                                //msgDialog.ShowDialog();
-                                Console.WriteLine($"{allyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
-                                break;
-
-                                //TODO - Add MsgDialog box to Special Attacks.
-                        }
+                            //msgDialog.ShowDialog();
+                            Console.WriteLine($"{allyTarget.ArticleName} took {physicalDamageTaken}HP of Physical damage!");
                     }
                     else 
                     {
@@ -560,7 +540,7 @@ namespace I_Am_No_Hero
                                     msgDialog.label1.Text = sb.ToString();
                                     msgDialog.ShowDialog();
                                 }
-                                else
+                                else //using a special skill
                                 {
                                     StringBuilder sb = new StringBuilder();
                                     sb.Append($"{enemyTarget.ArticleName} used the Special Skill {SPSkillUsed.SkillName} on {allyTarget.ArticleName}!" +
@@ -606,6 +586,8 @@ namespace I_Am_No_Hero
             }
             else
             {
+
+                //======================================================== ALLY TURN ===============================================================//
                 if (person == AllyOne)
                 {
                     TurnOver = false;
